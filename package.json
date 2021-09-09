@@ -1,0 +1,23 @@
+{
+  "name": "locatecabs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "LocateCabsWeb.js",
+  "scripts": {
+    "Start": "nodemon LocateCabsWeb.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-myconnection": "^1.0.4",
+    "mysql": "^2.18.1",
+    "no-ip": "^1.0.2",
+    "socket.io": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

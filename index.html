@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocateCabs</title>
+    <style>       
+        div {
+          margin-bottom: 10px;
+          text-align: center;
+        }
+        label {
+          font-family: Arial;
+          font-style: normal;
+          font-size: 200%;
+          display: inline-block;
+          width: 150px;
+          text-align: center;
+        }
+        input {
+            font-size: 200%;
+        }
+        header {
+            /*color: rgb(76, 175, 80);*/
+            font-family: Arial;
+            font-style: normal;
+            font-size: 400%;
+            text-align: left;
+            margin-bottom: 50px;
+        }
+        #mapid { height: 500px; }
+        button {
+            background-color: rgb(76, 175, 80);
+            border: none;
+            color:white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        button:hover {
+
+          background-color: rgb(62, 142, 65)
+
+        }
+
+        button:active{
+
+          background-color: rgb(62, 142, 65);
+          /* box-shadow: 0 5px #666; */
+          transform: translateY(4px);
+
+        }
+      </style>
+       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+       integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+       crossorigin=""/>
+       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+</head>
+<body>
+    <div>
+      <header style="text-align: center"><b><i>LocateCabs</b></i></header>
+    </div>
+
+    <div>
+      <label>Usuario</label>
+      <label id="UsuID"style="border: 1px solid black; border-radius: 8px; width: 300px;">-</label>
+    </div>
+
+    <div>
+      <label>Latitud</label>
+      <label id="LatID"style="border: 1px solid black; border-radius: 8px; width: 300px;">-</label>
+    </div>
+
+    <div>
+      <label>Longitud</label>
+      <label id="LongID" style="border: 1px solid black; border-radius: 8px; width: 300px;">-</label>
+    </div>
+    <div>
+      <label>Fecha</label>
+      <label id="FechaID" style="border: 1px solid black; border-radius: 8px; width: 300px;">-</label>
+    </div>
+    <div>
+        <label>Hora</label>
+        <label id="HoraID" style="border: 1px solid black; border-radius: 8px; width: 300px;">-</label>
+    </div>
+    <div id="mapid"></div>
+
+    <div>
+
+      <button onclick="MapAutoCenter(), Markerlabel()">Auto-center Camera</button>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+   
+              let lat = 0;
+              let long = 0 ; 
+              function MapsetUbication() {mymap.setView(new L.LatLng(lat,long));}
+              function MapAutoCenter() {mymap.setView(new L.LatLng(lat,long), 18);}
+              function setMarker() {circle_marker.setLatLng(new L.LatLng(lat, long)) ;
+                circle.setLatLng(new L.LatLng(lat, long))}
+              function Markerlabel() { circle_marker.bindPopup(usuario,{autoPan: false}).openPopup()}
+              
+              let mymap = L.map('mapid').setView([lat,long], 18);
+              var circle = L.circle([lat,long], {radius: 50, color: '#FCFF42'}).addTo(mymap);
+              var circle_marker = L.circleMarker([lat,long],{color: '#CA2049'}) .bindPopup("No Data",{autoPan: false}).addTo(mymap);  
+              circle_marker.openPopup();
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+               maxZoom: 19 }).addTo(mymap);
+               
+              document.addEventListener('DOMContentLoaded', function() {
+
+                  old_user = "-";
+                  
+                  io().on('change', function(data) {
+                  
+                      document.getElementById('UsuID').innerHTML = data.DataUsu;
+                      document.getElementById('LatID').innerHTML =  data.DataLat;
+                      document.getElementById('LongID').innerHTML = data.DataLong;
+                      document.getElementById('FechaID').innerHTML = data.DataFecha;
+                      document.getElementById('HoraID').innerHTML = data.DataHora;
+                      lat  =  data.DataLat ;  
+                      long  =  data.DataLong ;
+                      usuario = data.DataUsu ;
+                      setInterval(setMarker, 3000); 
+                      if (old_user != usuario){ 
+                        setTimeout(function(){MapsetUbication(), Markerlabel()}, 1000);
+                        old_user = usuario;  
+                      }
+                      
+                  }); 
+            
+                                         
+              });
+
+    </script>
+
+</body>
+</html>
